@@ -205,6 +205,7 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+# Azure service principal / subscription credentials (DO NOT COMMIT REAL VALUES)
 azure_credentials.json
 
 # Environment files
