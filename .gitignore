@@ -206,3 +206,15 @@ marimo/_static/
 marimo/_lsp/
 __marimo__/
 azure_credentials.json
+
+# Environment files
+backend/.env
+frontend/.env
+functions/local.settings.json
+
+# Node modules
+frontend/node_modules/
+node_modules/
+
+# Python virtual environment
+backend/venv/

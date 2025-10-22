@@ -1,121 +1,167 @@
 /**
- * StoryScribe - Main Application Component
- * 
- * This is the primary component for the StoryScribe application, integrating
- * the writing interface, prompt system, and navigation components.
- * 
- * The application uses React Router for navigation and Context API for state
- * management across components.
-
-
-Interesting fact: React's component-based architecture was inspired by the XHP extension for PHP used internally at Facebook. The approach of breaking UIs into reusable components was revolutionary when React was first released in 2013 and has since become the standard pattern for modern web development frameworks.
+ * App.jsx
+ * WHAT: Beautiful, simple UI to create/list stories and fetch AI prompts.
+ * WHY: Demonstrate end-to-end interaction with clean design.
+ * HOW: Guest user mode with localStorage, will add real auth later.
  */
 
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AppStateProvider } from './contexts/AppStateContext';
-import { AuthProvider, useAuth } from './contexts/AuthContext';
+import React, { useState, useEffect } from "react";
+import "./App.css";
 
-// Components
-import Navbar from './components/layout/Navbar';
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
-import Dashboard from './pages/Dashboard';
-import StoryEditor from './pages/StoryEditor';
-import BookDevelopment from './pages/BookDevelopment';
-import Settings from './pages/Settings';
-import NotFound from './pages/NotFound';
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
 
-// Styles
-import './styles/App.css';
-
-/**
- * Protected route component that redirects to login if user is not authenticated
- */
-const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated } = useAuth();
-  
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+function randomUserId() {
+  let id = localStorage.getItem("storyscribe_user");
+  if (!id) {
+    id = "guest_" + Math.random().toString(36).slice(2, 10);
+    localStorage.setItem("storyscribe_user", id);
   }
-  
-  return children;
-};
-
-/**
- * Main App component that sets up routing and global providers
- */
-function App() {
-  const [isLoading, setIsLoading] = useState(true);
-  
-  // Simulate initial loading (e.g., checking auth status)
-  useEffect(() => {
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
-  }, []);
-  
-  if (isLoading) {
-    return (
-      <div className="app-loading">
-        <div className="loading-spinner"></div>
-        <h2>Loading StoryScribe...</h2>
-      </div>
-    );
-  }
-  
-  return (
-    <Router>
-      <AuthProvider>
-        <AppStateProvider>
-          <div className="app-container">
-            <Navbar />
-            <main className="main-content">
-              <Routes>
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/register" element={<RegisterPage />} />
-                
-                <Route path="/" element={
-                  <ProtectedRoute>
-                    <Dashboard />
-                  </ProtectedRoute>
-                } />
-                
-                <Route path="/write" element={
-                  <ProtectedRoute>
-                    <StoryEditor />
-                  </ProtectedRoute>
-                } />
-                
-                <Route path="/edit/:storyId" element={
-                  <ProtectedRoute>
-                    <StoryEditor />
-                  </ProtectedRoute>
-                } />
-                
-                <Route path="/book-development" element={
-                  <ProtectedRoute>
-                    <BookDevelopment />
-                  </ProtectedRoute>
-                } />
-                
-                <Route path="/settings" element={
-                  <ProtectedRoute>
-                    <Settings />
-                  </ProtectedRoute>
-                } />
-                
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </main>
-            <footer className="app-footer">
-              <p>StoryScribe © {new Date().getFullYear()} - Your Trustworthy AI Writing Assistant</p>
-            </footer>
-          </div>
-        </AppStateProvider>
-      </AuthProvider>
-    </Router>
-  );
+  return id;
 }
 
-export default App;
+const userId = randomUserId();
+
+export default function App() {
+  const [stories, setStories] = useState([]);
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [prompt, setPrompt] = useState("");
+  const [loadingPrompt, setLoadingPrompt] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  async function loadStories() {
+    try {
+      const res = await fetch(`${API_BASE}/stories`, {
+        headers: { "X-User-Id": userId }
+      });
+      if (res.ok) {
+        setStories(await res.json());
+      }
+    } catch (e) {
+      console.error("Failed to load stories:", e);
+    }
+  }
+
+  async function createStory() {
+    if (!title.trim() || !content.trim()) return;
+    setSaving(true);
+    try {
+      const res = await fetch(`${API_BASE}/stories`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-User-Id": userId
+        },
+        body: JSON.stringify({ title, content })
+      });
+      if (res.ok) {
+        const doc = await res.json();
+        setStories(prev => [...prev, doc]);
+        setTitle("");
+        setContent("");
+      }
+    } catch (e) {
+      console.error("Failed to create story:", e);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function fetchPrompt() {
+    setLoadingPrompt(true);
+    try {
+      const res = await fetch(`${API_BASE}/prompt?genre=memoir`);
+      const data = await res.json();
+      setPrompt(data.prompt || "No prompt available");
+    } catch (e) {
+      setPrompt("Unable to fetch prompt. Please try again.");
+    } finally {
+      setLoadingPrompt(false);
+    }
+  }
+
+  useEffect(() => {
+    loadStories();
+  }, []);
+
+  return (
+    <div className="app">
+      <header className="app-header">
+        <h1>✍️ StoryScribe</h1>
+        <p>Your AI-powered writing companion</p>
+        <div className="user-badge">Guest: {userId}</div>
+      </header>
+
+      <div className="card">
+        <h2>✨ Get Inspired</h2>
+        <p style={{ color: "var(--text-secondary)", marginBottom: "1rem" }}>
+          Let AI help you find your next story to write
+        </p>
+        <button 
+          className="btn-primary" 
+          disabled={loadingPrompt} 
+          onClick={fetchPrompt}
+        >
+          {loadingPrompt ? "Generating..." : "Get Writing Prompt"}
+        </button>
+        {prompt && (
+          <div className="prompt-display">
+            <p>{prompt}</p>
+          </div>
+        )}
+      </div>
+
+      <div className="card">
+        <h2>📝 Write Your Story</h2>
+        <div className="input-group">
+          <label htmlFor="story-title">Title</label>
+          <input
+            id="story-title"
+            type="text"
+            placeholder="Give your story a title..."
+            value={title}
+            onChange={e => setTitle(e.target.value)}
+          />
+        </div>
+        <div className="input-group">
+          <label htmlFor="story-content">Your Story</label>
+          <textarea
+            id="story-content"
+            placeholder="Start writing your story here..."
+            value={content}
+            onChange={e => setContent(e.target.value)}
+          />
+        </div>
+        <button 
+          className="btn-primary" 
+          onClick={createStory}
+          disabled={!title.trim() || !content.trim() || saving}
+        >
+          {saving ? "Saving..." : "Save Story"}
+        </button>
+      </div>
+
+      <div className="card">
+        <h2>📚 Your Stories</h2>
+        {stories.length === 0 ? (
+          <div className="empty-state">
+            <div className="empty-state-icon">📖</div>
+            <p>No stories yet. Start writing to see them here!</p>
+          </div>
+        ) : (
+          <ul className="stories-list">
+            {stories.map(s => (
+              <li key={s.id}>
+                <div className="story-title">{s.title}</div>
+                <div className="story-preview">
+                  {s.content.slice(0, 120)}
+                  {s.content.length > 120 ? "..." : ""}
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>
+  );
+}
