@@ -8,6 +8,8 @@
 
 StoryScribe helps writers capture their personal stories through AI-generated writing prompts, beautiful UI, and seamless story management. Perfect for memoir writers, personal historians, and anyone who wants to preserve their life stories.
 
+Access the App here: https://ambitious-cliff-0afea2203.3.azurestaticapps.net/  
+
 ## ✨ Features
 
 - ✅ **AI-Powered Writing Prompts** - Get inspiring prompts (static or Azure OpenAI)
