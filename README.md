@@ -2,21 +2,21 @@
 
 StoryScribe is an innovative application that helps writers transform their thoughts and memories into published books through AI-assisted prompting, organization, and refinement.
 
-story-scribe/
-├── .github/workflows/        # GitHub Actions CI/CD workflows
-├── backend/                  # Python FastAPI or Node.js Express backend
-│   ├── api/                  # API endpoints
-│   ├── ai/                   # AI service integrations
-│   ├── db/                   # Database models and migrations
-│   └── security/             # Auth and security features
-├── frontend/                 # React or Vue.js frontend
-│   ├── public/               # Static assets
-│   └── src/                  # Frontend source code
-├── infrastructure/           # Azure infrastructure as code (Terraform/ARM templates)
-│   ├── app-services/
-│   └── ai-services/
-├── docs/                     # Project documentation
-└── README.md                 # Project overview
+story-scribe/  
+├── .github/workflows/        # GitHub Actions CI/CD workflows  
+├── backend/                  # Python FastAPI or Node.js Express backend  
+│   ├── api/                  # API endpoints  
+│   ├── ai/                   # AI service integrations  
+│   ├── db/                   # Database models and migrations  
+│   └── security/             # Auth and security features  
+├── frontend/                 # React or Vue.js frontend  
+│   ├── public/               # Static assets  
+│   └── src/                  # Frontend source code  
+├── infrastructure/           # Azure infrastructure as code (Terraform/ARM templates)  
+│   ├── app-services/  
+│   └── ai-services/  
+├── docs/                     # Project documentation  
+└── README.md                 # Project overview  
 
 ## Features
 
