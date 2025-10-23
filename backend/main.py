@@ -113,10 +113,10 @@ def get_openai_client():
 
 # Static fallback prompts
 FALLBACK_PROMPTS = {
-    "memoir": "Write about a moment from your childhood that shaped who you are today. What happened, and why does it matter?",
-    "adventure": "Describe a time you stepped outside your comfort zone. What did you discover about yourself?",
-    "reflection": "Think about a relationship that changed your perspective. What did you learn?",
-    "creative": "Imagine your life as a book. What would the opening line be, and why?",
+    "memoir": "What childhood moment shaped you?",
+    "adventure": "When did you feel most brave?",
+    "reflection": "Which relationship changed you most?",
+    "creative": "What's your life's opening line?",
 }
 
 SYSTEM_PROMPT_TEMPLATES = [

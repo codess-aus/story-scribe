@@ -37,23 +37,26 @@ def get_client():
     return client, deployment
 
 SYSTEM_PROMPT_TEMPLATES = [
-    """Generate ONE short personal reflection question.
+    """Generate ONE ultra-concise personal reflection question.
 
 Current topic: {MOOD}
 
 PERFECT EXAMPLES:
-- "What belief has shaped your life the most?"
-- "What was your favorite childhood snack?"
-- "Which person taught you the most about kindness?"
+- "What belief shaped you most?"
+- "Which childhood snack do you miss?"
+- "Who taught you about kindness?"
 - "What habit do you want to break?"
-- "Who makes you laugh the hardest?"
+- "Who makes you laugh hardest?"
 
-STRICT FORMAT:
-1. Use ONLY: What/When/Who/Where/Which/How
-2. Max 7-8 words before optional "and why?"
-3. Focus on ONE specific thing
-4. NO phrases like "tell me" or "write about"
-5. NO complex clauses or scenarios
+STRICT RULES:
+1. ONLY use What/When/Who/Where/Which/How
+2. MAX LENGTH: 6 words + optional "and why?"
+3. ONE thing only - NO compound questions
+4. NO "tell me" or "write about"
+5. NO additional context or scenarios
+6. NO emotional prompting or reflection guidance
+7. ABSOLUTELY NO multi-part questions
+8. NO phrases about emotions, impact, or meaning
 
 Output the question only."""
 ]
@@ -158,7 +161,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         logging.exception("Error generating prompt")
         # Return fallback prompt on error
         fallback_result = {
-            "prompt": "What moment changed your perspective, and why?",
+            "prompt": "What changed you most?",
             "genre": genre,
             "mood": mood_config["label"],
             "error": str(e),

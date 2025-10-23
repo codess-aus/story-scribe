@@ -173,11 +173,7 @@ class ProgressivePromptingSystem:
         # a personalized continuation prompt based on the recent story content
         # For this example, we'll return a templated response
         
-        prompt = (
-            f"Let's continue developing your story \"{recent_story.title or 'your recent story'}\". "
-            f"You wrote about {recent_story.content_preview}... "
-            f"What happens next? How do the events unfold from here?"
-        )
+        prompt = f"What happens next in your story about {recent_story.content_preview}?"
         
         return {
             "prompt": prompt,
@@ -191,12 +187,12 @@ class ProgressivePromptingSystem:
         
         # Example topics that could be expanded with AI generation
         topic_templates = [
-            "Write about a time when you felt completely out of your element. What happened and how did you adapt?",
-            "Share a memory involving a specific smell or taste that transports you back to a specific moment.",
-            "Describe an encounter with a stranger that left a lasting impression on you.",
-            "Write about a tradition in your family or community that has special meaning to you.",
-            "Share a story about a journey - either literal or metaphorical - that changed your perspective.",
-            "Describe a moment when you had to make a difficult choice between two things you wanted.",
+            "When did you feel completely out of your element?",
+            "Which smell brings back your strongest memory?",
+            "Who was the most memorable stranger you met?",
+            "What family tradition means the most to you?",
+            "Which journey changed your perspective forever?",
+            "What was your hardest decision, and why?",
         ]
         
         return {
@@ -212,12 +208,7 @@ class ProgressivePromptingSystem:
         # For this example, we'll provide a mock response
         suggested_genres = ["Memoir", "Personal Development", "Travel Writing", "Coming of Age"]
         
-        prompt = (
-            "Based on the stories you've shared so far, your writing might fit well into "
-            f"these genres: {', '.join(suggested_genres)}. \n\n"
-            "Which of these resonates with you? Or is there another genre you'd prefer? "
-            "Share a story that reflects the genre you're most interested in exploring further."
-        )
+        prompt = f"Which genre speaks to you most: {', '.join(suggested_genres)}?"
         
         return {
             "prompt": prompt,
@@ -240,12 +231,7 @@ class ProgressivePromptingSystem:
             "The Tapestry of Experience"
         ]
         
-        prompt = (
-            "Your collection of stories is taking shape! Here are some potential titles "
-            f"for your book: {', '.join(suggested_titles)}. \n\n"
-            "Do any of these titles speak to you? Write a story that could serve as the "
-            "opening chapter, setting the tone for your book under your favorite title."
-        )
+        prompt = f"Which potential title resonates most: {', '.join(suggested_titles)}?"
         
         return {
             "prompt": prompt,
@@ -266,12 +252,7 @@ class ProgressivePromptingSystem:
         # For this example, choose a random story from the user's history
         story_to_refine = random.choice(self.content_history)
         
-        prompt = (
-            f"Let's revisit your story \"{story_to_refine.title or 'from before'}\". "
-            "Consider adding more sensory details or dialogue to make it more vivid. "
-            "How might you expand on the emotions or thoughts of the people involved? "
-            "Try rewriting a section with these enhancements."
-        )
+        prompt = f"What sensory details would make your story about {story_to_refine.title or 'your experience'} more vivid?"
         
         return {
             "prompt": prompt,
@@ -283,11 +264,7 @@ class ProgressivePromptingSystem:
     
     def _create_reflection_prompt(self) -> Dict:
         """Generate a prompt asking the user to reflect on their stories"""
-        prompt = (
-            "Looking back on the stories you've written so far, what themes or patterns "
-            "do you notice emerging? Which stories feel most meaningful to you, and why? "
-            "Write a reflection on your journey as an author up to this point."
-        )
+        prompt = "What patterns do you notice in your stories?"
         
         return {
             "prompt": prompt,
@@ -297,9 +274,9 @@ class ProgressivePromptingSystem:
     def _get_fallback_prompt(self) -> str:
         """Provide a simple fallback prompt if AI generation fails"""
         fallback_prompts = [
-            "Write about a memorable conversation you've had recently.",
-            "Describe a place that has special meaning to you.",
-            "Share a story about an object you treasure.",
-            "Write about a skill you've learned or want to learn."
+            "What was your most meaningful recent conversation?",
+            "Which place holds your dearest memories?",
+            "What object means the most to you?",
+            "What skill do you most want to learn?"
         ]
         return random.choice(fallback_prompts)
