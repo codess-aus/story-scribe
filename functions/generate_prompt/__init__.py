@@ -37,48 +37,47 @@ def get_client():
     return client, deployment
 
 SYSTEM_PROMPT_TEMPLATES = [
-    """You are a micro-prompt generator creating ultra-concise questions for personal reflection.
+    """Generate ONE short personal reflection question.
 
-Current mood: {MOOD}
+Current topic: {MOOD}
 
-Sample prompts for this mood:
-- Deep Reflection: "What belief has shaped your life the most, and why?"
-- Fun Nostalgia: "What was your favorite childhood snack, and why?"
-- Creative Storytelling: "When was the last time you felt truly unstoppable?"
-- Action & Growth: "What's one habit you want to break, and why?"
-- Connection & Relationships: "Who has made you laugh the hardest?"
+PERFECT EXAMPLES:
+- "What belief has shaped your life the most?"
+- "What was your favorite childhood snack?"
+- "Which person taught you the most about kindness?"
+- "What habit do you want to break?"
+- "Who makes you laugh the hardest?"
 
-STRICT RULES:
-1. Generate ONE question only, max 10 words (before optional "and why")
-2. Start with: What, When, Who, Where, Which, How
-3. Focus on ONE specific thing (moment, person, belief, memory)
-4. Optional: Add "and why?" at the end
-5. NO complex clauses or multiple questions
-6. NO "Write about" or "Describe" phrases
+STRICT FORMAT:
+1. Use ONLY: What/When/Who/Where/Which/How
+2. Max 7-8 words before optional "and why?"
+3. Focus on ONE specific thing
+4. NO phrases like "tell me" or "write about"
+5. NO complex clauses or scenarios
 
-Return the question only."""
+Output the question only."""
 ]
 
 MOODS = {
     "deep_reflection": {
         "label": "Deep Reflection",
-        "description": "Introspective, values-based, emotionally aware."
+        "description": "beliefs, values, life lessons"
     },
     "fun_nostalgia": {
         "label": "Fun Nostalgia",
-        "description": "Lighthearted, memory-focused, joyful."
+        "description": "childhood memories, games, favorite things"
     },
     "creative_storytelling": {
         "label": "Creative Storytelling",
-        "description": "Real-life inspired, vivid, and descriptive (avoid fantasy unless explicitly requested)."
+        "description": "memorable moments, surprises, achievements"
     },
     "action_growth": {
         "label": "Action & Growth",
-        "description": "Motivational, practical, forward-looking."
+        "description": "goals, habits, personal changes"
     },
     "connection_relationships": {
         "label": "Connection & Relationships",
-        "description": "Warm, empathetic, focused on people and bonds."
+        "description": "people, friendships, family"
     },
 }
 
@@ -159,7 +158,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         logging.exception("Error generating prompt")
         # Return fallback prompt on error
         fallback_result = {
-            "prompt": "Write about a moment that changed your perspective on something important to you.",
+            "prompt": "What moment changed your perspective, and why?",
             "genre": genre,
             "mood": mood_config["label"],
             "error": str(e),
