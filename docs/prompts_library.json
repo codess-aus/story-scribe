@@ -1,0 +1,402 @@
+[
+    {
+        "category": "Deep Reflection",
+        "prompt_text": "What belief has shaped your life the most, and why?"
+    },
+    {
+        "category": "Deep Reflection",
+        "prompt_text": "When was the last time you felt truly at peace?"
+    },
+    {
+        "category": "Deep Reflection",
+        "prompt_text": "What does success mean to you now compared to five years ago?"
+    },
+    {
+        "category": "Deep Reflection",
+        "prompt_text": "What’s a lesson you learned the hard way?"
+    },
+    {
+        "category": "Deep Reflection",
+        "prompt_text": "Which personal value do you refuse to compromise on?"
+    },
+    {
+        "category": "Deep Reflection",
+        "prompt_text": "What’s the biggest risk you’ve ever taken, and what happened?"
+    },
+    {
+        "category": "Deep Reflection",
+        "prompt_text": "When have you felt most proud of yourself?"
+    },
+    {
+        "category": "Deep Reflection",
+        "prompt_text": "What’s a fear that has held you back in life?"
+    },
+    {
+        "category": "Deep Reflection",
+        "prompt_text": "How do you define happiness for yourself?"
+    },
+    {
+        "category": "Deep Reflection",
+        "prompt_text": "What’s something you’ve forgiven yourself for?"
+    },
+    {
+        "category": "Deep Reflection",
+        "prompt_text": "What’s a decision you wish you could revisit?"
+    },
+    {
+        "category": "Deep Reflection",
+        "prompt_text": "When did you last surprise yourself?"
+    },
+    {
+        "category": "Deep Reflection",
+        "prompt_text": "What does resilience look like in your life?"
+    },
+    {
+        "category": "Deep Reflection",
+        "prompt_text": "What’s a habit that changed your life for the better?"
+    },
+    {
+        "category": "Deep Reflection",
+        "prompt_text": "What’s a truth you’ve recently discovered about yourself?"
+    },
+    {
+        "category": "Deep Reflection",
+        "prompt_text": "What does “home” mean to you?"
+    },
+    {
+        "category": "Deep Reflection",
+        "prompt_text": "What’s a moment that changed your perspective forever?"
+    },
+    {
+        "category": "Deep Reflection",
+        "prompt_text": "What’s something you’ve let go of that made you lighter?"
+    },
+    {
+        "category": "Deep Reflection",
+        "prompt_text": "What does living authentically mean to you?"
+    },
+    {
+        "category": "Deep Reflection",
+        "prompt_text": "What’s a dream you’ve never shared with anyone?"
+    },
+    {
+        "category": "Fun Nostalgia",
+        "prompt_text": "What was your favorite childhood snack, and why?"
+    },
+    {
+        "category": "Fun Nostalgia",
+        "prompt_text": "Which TV show defined your teenage years?"
+    },
+    {
+        "category": "Fun Nostalgia",
+        "prompt_text": "What game did you love to play as a kid?"
+    },
+    {
+        "category": "Fun Nostalgia",
+        "prompt_text": "What was your favorite school subject and why?"
+    },
+    {
+        "category": "Fun Nostalgia",
+        "prompt_text": "Which song takes you back instantly to a happy memory?"
+    },
+    {
+        "category": "Fun Nostalgia",
+        "prompt_text": "What was your first big purchase as a teenager?"
+    },
+    {
+        "category": "Fun Nostalgia",
+        "prompt_text": "What’s a smell that reminds you of home?"
+    },
+    {
+        "category": "Fun Nostalgia",
+        "prompt_text": "Which childhood friend do you still think about?"
+    },
+    {
+        "category": "Fun Nostalgia",
+        "prompt_text": "What was your favorite holiday tradition growing up?"
+    },
+    {
+        "category": "Fun Nostalgia",
+        "prompt_text": "What was your go-to comfort food as a kid?"
+    },
+    {
+        "category": "Fun Nostalgia",
+        "prompt_text": "Which toy did you love the most?"
+    },
+    {
+        "category": "Fun Nostalgia",
+        "prompt_text": "What was your favorite playground activity?"
+    },
+    {
+        "category": "Fun Nostalgia",
+        "prompt_text": "Which movie did you watch over and over as a child?"
+    },
+    {
+        "category": "Fun Nostalgia",
+        "prompt_text": "What was your favorite birthday memory?"
+    },
+    {
+        "category": "Fun Nostalgia",
+        "prompt_text": "What was your first favorite book?"
+    },
+    {
+        "category": "Fun Nostalgia",
+        "prompt_text": "Which fashion trend did you embrace as a teen?"
+    },
+    {
+        "category": "Fun Nostalgia",
+        "prompt_text": "What was your favorite summer activity?"
+    },
+    {
+        "category": "Fun Nostalgia",
+        "prompt_text": "What was your first big adventure away from home?"
+    },
+    {
+        "category": "Fun Nostalgia",
+        "prompt_text": "Which teacher made the biggest impact on you?"
+    },
+    {
+        "category": "Fun Nostalgia",
+        "prompt_text": "What was your favorite rainy-day activity?"
+    },
+    {
+        "category": "Creative Storytelling",
+        "prompt_text": "Describe the first time you felt truly independent."
+    },
+    {
+        "category": "Creative Storytelling",
+        "prompt_text": "Write about a day that started ordinary but ended unexpectedly."
+    },
+    {
+        "category": "Creative Storytelling",
+        "prompt_text": "Tell the story of a time you got completely lost."
+    },
+    {
+        "category": "Creative Storytelling",
+        "prompt_text": "Describe a moment when you had to make a split-second decision."
+    },
+    {
+        "category": "Creative Storytelling",
+        "prompt_text": "Write about a time you laughed until you cried."
+    },
+    {
+        "category": "Creative Storytelling",
+        "prompt_text": "Tell the story of your first big win."
+    },
+    {
+        "category": "Creative Storytelling",
+        "prompt_text": "Describe a time when you felt like an outsider."
+    },
+    {
+        "category": "Creative Storytelling",
+        "prompt_text": "Write about a conversation that changed everything."
+    },
+    {
+        "category": "Creative Storytelling",
+        "prompt_text": "Tell the story of a time you stood up for someone."
+    },
+    {
+        "category": "Creative Storytelling",
+        "prompt_text": "Describe a moment when you felt unstoppable."
+    },
+    {
+        "category": "Creative Storytelling",
+        "prompt_text": "Write about a time you broke the rules."
+    },
+    {
+        "category": "Creative Storytelling",
+        "prompt_text": "Tell the story of a time you surprised yourself."
+    },
+    {
+        "category": "Creative Storytelling",
+        "prompt_text": "Describe a day you wish you could relive."
+    },
+    {
+        "category": "Creative Storytelling",
+        "prompt_text": "Write about a time you helped a stranger."
+    },
+    {
+        "category": "Creative Storytelling",
+        "prompt_text": "Tell the story of your first big failure—and what you learned."
+    },
+    {
+        "category": "Creative Storytelling",
+        "prompt_text": "Describe a time when you felt completely free."
+    },
+    {
+        "category": "Creative Storytelling",
+        "prompt_text": "Write about a moment that made you believe in luck."
+    },
+    {
+        "category": "Creative Storytelling",
+        "prompt_text": "Tell the story of a time you faced your biggest fear."
+    },
+    {
+        "category": "Creative Storytelling",
+        "prompt_text": "Describe a time when you had to choose between two good options."
+    },
+    {
+        "category": "Creative Storytelling",
+        "prompt_text": "Write about a day that changed your life forever."
+    },
+    {
+        "category": "Action & Growth",
+        "prompt_text": "What’s one habit you want to break, and why?"
+    },
+    {
+        "category": "Action & Growth",
+        "prompt_text": "What’s a skill you want to learn this year?"
+    },
+    {
+        "category": "Action & Growth",
+        "prompt_text": "What’s your biggest goal for the next 12 months?"
+    },
+    {
+        "category": "Action & Growth",
+        "prompt_text": "What’s one small change that could improve your life?"
+    },
+    {
+        "category": "Action & Growth",
+        "prompt_text": "What’s something you’ve been putting off—and why?"
+    },
+    {
+        "category": "Action & Growth",
+        "prompt_text": "What’s a fear you want to overcome?"
+    },
+    {
+        "category": "Action & Growth",
+        "prompt_text": "What’s one thing you can do today to feel accomplished?"
+    },
+    {
+        "category": "Action & Growth",
+        "prompt_text": "What’s a challenge you want to set for yourself this month?"
+    },
+    {
+        "category": "Action & Growth",
+        "prompt_text": "What’s a book you’ve been meaning to read—and why?"
+    },
+    {
+        "category": "Action & Growth",
+        "prompt_text": "What’s a financial goal you want to achieve?"
+    },
+    {
+        "category": "Action & Growth",
+        "prompt_text": "What’s one way you can invest in yourself this week?"
+    },
+    {
+        "category": "Action & Growth",
+        "prompt_text": "What’s a new routine you’d like to try?"
+    },
+    {
+        "category": "Action & Growth",
+        "prompt_text": "What’s a bad habit you’ve already conquered?"
+    },
+    {
+        "category": "Action & Growth",
+        "prompt_text": "What’s one thing you can do to improve your health?"
+    },
+    {
+        "category": "Action & Growth",
+        "prompt_text": "What’s a personal milestone you’re working toward?"
+    },
+    {
+        "category": "Action & Growth",
+        "prompt_text": "What’s a new experience you want to try this year?"
+    },
+    {
+        "category": "Action & Growth",
+        "prompt_text": "What’s one way you can simplify your life?"
+    },
+    {
+        "category": "Action & Growth",
+        "prompt_text": "What’s a professional skill you want to master?"
+    },
+    {
+        "category": "Action & Growth",
+        "prompt_text": "What’s one thing you can do to boost your confidence?"
+    },
+    {
+        "category": "Action & Growth",
+        "prompt_text": "What’s a dream you’re ready to start working on?"
+    },
+    {
+        "category": "Connection & Relationships",
+        "prompt_text": "Who in your life deserves a thank-you note you’ve never written?"
+    },
+    {
+        "category": "Connection & Relationships",
+        "prompt_text": "Who was your first best friend, and what made them special?"
+    },
+    {
+        "category": "Connection & Relationships",
+        "prompt_text": "Who do you admire most, and why?"
+    },
+    {
+        "category": "Connection & Relationships",
+        "prompt_text": "Who has influenced your life the most?"
+    },
+    {
+        "category": "Connection & Relationships",
+        "prompt_text": "Who do you wish you could reconnect with?"
+    },
+    {
+        "category": "Connection & Relationships",
+        "prompt_text": "Who has taught you the most about kindness?"
+    },
+    {
+        "category": "Connection & Relationships",
+        "prompt_text": "Who do you turn to when life gets hard?"
+    },
+    {
+        "category": "Connection & Relationships",
+        "prompt_text": "Who has made you feel truly seen?"
+    },
+    {
+        "category": "Connection & Relationships",
+        "prompt_text": "Who do you need to forgive, and why?"
+    },
+    {
+        "category": "Connection & Relationships",
+        "prompt_text": "Who has surprised you with their generosity?"
+    },
+    {
+        "category": "Connection & Relationships",
+        "prompt_text": "Who has been your biggest cheerleader?"
+    },
+    {
+        "category": "Connection & Relationships",
+        "prompt_text": "Who do you miss the most right now?"
+    },
+    {
+        "category": "Connection & Relationships",
+        "prompt_text": "Who has challenged you to grow?"
+    },
+    {
+        "category": "Connection & Relationships",
+        "prompt_text": "Who do you want to thank for shaping who you are?"
+    },
+    {
+        "category": "Connection & Relationships",
+        "prompt_text": "Who has shown you unconditional love?"
+    },
+    {
+        "category": "Connection & Relationships",
+        "prompt_text": "Who do you want to spend more time with?"
+    },
+    {
+        "category": "Connection & Relationships",
+        "prompt_text": "Who has taught you the value of honesty?"
+    },
+    {
+        "category": "Connection & Relationships",
+        "prompt_text": "Who do you admire for their resilience?"
+    },
+    {
+        "category": "Connection & Relationships",
+        "prompt_text": "Who has made you laugh the hardest?"
+    },
+    {
+        "category": "Connection & Relationships",
+        "prompt_text": "Who do you want to write a letter to today?"
+    }
+]
