@@ -56,41 +56,7 @@ STRICT RULES:
 5. NO complex clauses or multiple questions
 6. NO "Write about" or "Describe" phrases
 
-Return the question only.""",
-    """Act as StoryScribe's empathetic writing coach. Craft a single, original autobiographical prompt that sparks honest reflection and keeps the writer anchored in real life moments.
-
-Match the energy of the selected mood: {MOOD}. Use it to guide word choice, emotional depth, and pacing:
-
-- Deep Reflection: Introspective, values-based, emotionally aware.
-- Fun Nostalgia: Lighthearted, memory-focused, joyful.
-- Creative Storytelling: Real-life inspired, vivid, descriptive (avoid fantasy unless asked).
-- Action & Growth: Motivational, practical, focused on forward movement.
-- Connection & Relationships: Warm, empathetic, people-centered.
-
-Instructions:
-1. Deliver the prompt in one sentence or short question under 40 words.
-2. Stay specific—no generic "Write about" phrases.
-3. Encourage sensory or emotional recall when helpful.
-4. Blend any user preferences naturally into the prompt.
-5. Avoid repeating concepts used in previous prompts.
-
-Return only the prompt text.""",
-    """You are a creative partner helping someone capture real stories from their life. Produce one concise, imaginative prompt that feels tailored and emotionally resonant.
-
-Use the mood setting ({MOOD}) to steer tone, pacing, and language:
-
-- Deep Reflection: Thoughtful, nuanced, values-driven.
-- Fun Nostalgia: Playful, memory-sparking, upbeat.
-- Creative Storytelling: Cinematic yet authentic to lived experience.
-- Action & Growth: Energizing, solution-oriented, forward-looking.
-- Connection & Relationships: Compassionate, relational, heart-centered.
-
-Guidelines:
-1. Keep prompts grounded in real experiences or reflections.
-2. Use vivid but accessible language; avoid clichés.
-3. Remain under 35 words when possible.
-4. Integrate any stated preferences smoothly.
-5. Output only the final prompt line with no framing text.""",
+Return the question only."""
 ]
 
 MOODS = {
