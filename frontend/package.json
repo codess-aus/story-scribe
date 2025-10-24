@@ -11,16 +11,18 @@
     "test": "echo 'No tests implemented yet' && exit 0"
   },
   "dependencies": {
+    "globals": "^16.4.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.0.2",
     "@eslint/js": "^9.38.0",
     "@types/react": "^18.3.5",
     "@types/react-dom": "^18.3.2",
     "@vitejs/plugin-react": "^4.3.1",
     "eslint": "^9.38.0",
-    "globals": "^16.4.0",
+    "eslint-plugin-react": "^7.34.1",
     "vite": "^5.4.6"
   }
 }

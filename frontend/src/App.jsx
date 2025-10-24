@@ -8,13 +8,13 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
 function randomUserId() {
-  let id = localStorage.getItem("storyscribe_user");
+  let id = localStorage.getItem('storyscribe_user');
   if (!id) {
-    id = "guest_" + Math.random().toString(36).slice(2, 10);
-    localStorage.setItem("storyscribe_user", id);
+    id = 'guest_' + Math.random().toString(36).slice(2, 10);
+    localStorage.setItem('storyscribe_user', id);
   }
   return id;
 }
@@ -23,22 +23,22 @@ const userId = randomUserId();
 
 export default function App() {
   const [stories, setStories] = useState([]);
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [prompt, setPrompt] = useState("");
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+  const [prompt, setPrompt] = useState('');
   const [loadingPrompt, setLoadingPrompt] = useState(false);
   const [saving, setSaving] = useState(false);
 
   async function loadStories() {
     try {
       const res = await fetch(`${API_BASE}/stories`, {
-        headers: { "X-User-Id": userId }
+        headers: { 'X-User-Id': userId }
       });
       if (res.ok) {
         setStories(await res.json());
       }
     } catch (e) {
-      console.error("Failed to load stories:", e);
+      console.error('Failed to load stories:', e);
     }
   }
 
@@ -47,21 +47,21 @@ export default function App() {
     setSaving(true);
     try {
       const res = await fetch(`${API_BASE}/stories`, {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
-          "X-User-Id": userId
+          'Content-Type': 'application/json',
+          'X-User-Id': userId
         },
         body: JSON.stringify({ title, content })
       });
       if (res.ok) {
         const doc = await res.json();
         setStories(prev => [...prev, doc]);
-        setTitle("");
-        setContent("");
+        setTitle('');
+        setContent('');
       }
     } catch (e) {
-      console.error("Failed to create story:", e);
+      console.error('Failed to create story:', e);
     } finally {
       setSaving(false);
     }
@@ -72,9 +72,9 @@ export default function App() {
     try {
       const res = await fetch(`${API_BASE}/prompt?genre=memoir`);
       const data = await res.json();
-      setPrompt(data.prompt || "No prompt available");
+      setPrompt(data.prompt || 'No prompt available');
     } catch (e) {
-      setPrompt("Unable to fetch prompt. Please try again.");
+      setPrompt('Unable to fetch prompt. Please try again.');
     } finally {
       setLoadingPrompt(false);
     }
@@ -94,7 +94,7 @@ export default function App() {
 
       <div className="card">
         <h2>✨ Get Inspired</h2>
-        <p style={{ color: "var(--text-secondary)", marginBottom: "1rem" }}>
+        <p style={{ color: 'var(--text-secondary)', marginBottom: '1rem' }}>
           Let AI help you find your next story to write
         </p>
         <button 
@@ -102,7 +102,7 @@ export default function App() {
           disabled={loadingPrompt} 
           onClick={fetchPrompt}
         >
-          {loadingPrompt ? "Generating..." : "Get Writing Prompt"}
+          {loadingPrompt ? 'Generating...' : 'Get Writing Prompt'}
         </button>
         {prompt && (
           <div className="prompt-display">
@@ -137,7 +137,7 @@ export default function App() {
           onClick={createStory}
           disabled={!title.trim() || !content.trim() || saving}
         >
-          {saving ? "Saving..." : "Save Story"}
+          {saving ? 'Saving...' : 'Save Story'}
         </button>
       </div>
 
@@ -155,7 +155,7 @@ export default function App() {
                 <div className="story-title">{s.title}</div>
                 <div className="story-preview">
                   {s.content.slice(0, 120)}
-                  {s.content.length > 120 ? "..." : ""}
+                  {s.content.length > 120 ? '...' : ''}
                 </div>
               </li>
             ))}

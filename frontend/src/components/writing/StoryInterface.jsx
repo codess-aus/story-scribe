@@ -85,9 +85,9 @@ const StoryInterface = () => {
       
       // Mock response for demonstration
       const mockPrompt = {
-        prompt_text: "Write about a childhood memory that taught you an important life lesson. What happened, and how has that lesson stayed with you over the years?",
-        prompt_type: "new_topic",
-        related_topics: ["memory", "childhood", "lessons", "growth"]
+        prompt_text: 'Write about a childhood memory that taught you an important life lesson. What happened, and how has that lesson stayed with you over the years?',
+        prompt_type: 'new_topic',
+        related_topics: ['memory', 'childhood', 'lessons', 'growth']
       };
       
       setCurrentPrompt(mockPrompt);
@@ -95,8 +95,8 @@ const StoryInterface = () => {
       console.error('Error fetching writing prompt', error);
       // Set a fallback prompt
       setCurrentPrompt({
-        prompt_text: "Write about an experience that changed your perspective on something important to you.",
-        prompt_type: "fallback",
+        prompt_text: 'Write about an experience that changed your perspective on something important to you.',
+        prompt_type: 'fallback',
         related_topics: []
       });
     }
@@ -204,19 +204,19 @@ const StoryInterface = () => {
       
       const mockSuggestions = [
         {
-          type: "style",
-          suggestion: "Consider adding more sensory details to the second paragraph to help readers visualize the scene.",
-          context: "paragraph 2"
+          type: 'style',
+          suggestion: 'Consider adding more sensory details to the second paragraph to help readers visualize the scene.',
+          context: 'paragraph 2'
         },
         {
-          type: "structure",
-          suggestion: "Your story might benefit from a stronger conclusion that ties back to the main theme.",
-          context: "ending"
+          type: 'structure',
+          suggestion: 'Your story might benefit from a stronger conclusion that ties back to the main theme.',
+          context: 'ending'
         },
         {
-          type: "enhancement",
-          suggestion: "You could expand on the character's motivation when they decide to take action.",
-          context: "character development"
+          type: 'enhancement',
+          suggestion: 'You could expand on the character\'s motivation when they decide to take action.',
+          context: 'character development'
         }
       ];
       

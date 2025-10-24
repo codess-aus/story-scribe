@@ -1,5 +1,6 @@
 """Test Azure OpenAI connection directly"""
 import os
+import pytest
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -20,7 +21,7 @@ def test_openai():
         
         if not endpoint or not api_key:
             print("\n❌ Missing credentials!")
-            return False
+            pytest.fail("Missing required credentials (OPENAI_ENDPOINT or OPENAI_API_KEY)")
         
         print("\n🔄 Creating Azure OpenAI client...")
         client = AzureOpenAI(
@@ -46,14 +47,16 @@ def test_openai():
         print(f"\n✅ AI-Generated Prompt:\n{prompt}\n")
         print(f"📊 Tokens used: {completion.usage.total_tokens}")
         
-        return True
+        assert prompt, "No prompt was generated"
+        assert len(prompt.split()) <= 40, "Generated prompt exceeds 40 words"
+        assert completion.usage.total_tokens > 0, "No tokens were used"
         
     except Exception as e:
         print(f"\n❌ Error: {e}")
         import traceback
         traceback.print_exc()
-        return False
+        pytest.fail(f"Test failed with error: {str(e)}")
 
 if __name__ == "__main__":
-    success = test_openai()
-    exit(0 if success else 1)
+    test_openai()
+    print("\n✅ All tests passed!")
