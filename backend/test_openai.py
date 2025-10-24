@@ -9,24 +9,31 @@ def test_openai():
     try:
         from openai import AzureOpenAI
         
+        from azure.identity import DefaultAzureCredential
+
         endpoint = os.getenv("AZURE_OPENAI_ENDPOINT")
         deployment = os.getenv("AZURE_OPENAI_DEPLOYMENT", "gpt-4o-mini")
         api_version = os.getenv("AZURE_OPENAI_API_VERSION", "2024-08-01-preview")
-        api_key = os.getenv("AZURE_OPENAI_API_KEY")
         
         print(f"Endpoint: {endpoint}")
         print(f"Deployment: {deployment}")
         print(f"API Version: {api_version}")
-        print(f"API Key: {'*' * 20}{api_key[-10:] if api_key else 'NOT SET'}")
+        print("Authentication: Using Azure Managed Identity")
         
-        if not endpoint or not api_key:
-            print("\n❌ Missing credentials!")
-            pytest.fail("Missing required credentials (AZURE_OPENAI_ENDPOINT or AZURE_OPENAI_API_KEY)")
+        if not endpoint:
+            print("\n❌ Missing endpoint!")
+            pytest.fail("Missing required AZURE_OPENAI_ENDPOINT environment variable")
+            
+        # Get Azure credential token
+        print("\n🔄 Getting Azure credentials...")
+        credential = DefaultAzureCredential()
+        token = credential.get_token("https://cognitiveservices.azure.com/.default")
+        print("✅ Got Azure token")
         
         print("\n🔄 Creating Azure OpenAI client...")
         client = AzureOpenAI(
             azure_endpoint=endpoint,
-            api_key=api_key,
+            api_key=token.token,
             api_version=api_version
         )
         
