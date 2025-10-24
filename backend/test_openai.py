@@ -18,7 +18,7 @@ def test_openai():
         print(f"Endpoint: {endpoint}")
         print(f"Deployment: {deployment}")
         print(f"API Version: {api_version}")
-        print("Authentication: Using Azure Managed Identity")
+        print("Authentication: Using Azure Managed Identity with RBAC")
         
         if not endpoint:
             print("\n❌ Missing endpoint!")
