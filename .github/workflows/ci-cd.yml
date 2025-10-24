@@ -54,6 +54,11 @@ jobs:
         working-directory: ./frontend
         run: npm test
 
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
       - name: Run backend tests
         working-directory: ./backend
         run: pytest
