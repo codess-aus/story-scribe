@@ -5,8 +5,8 @@
  * HOW: Guest user mode with localStorage, will add real auth later.
  */
 
-import React, { useState, useEffect } from "react";
-import "./App.css";
+import React, { useState, useEffect } from 'react';
+import './App.css';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
 
@@ -85,11 +85,11 @@ export default function App() {
   }, []);
 
   return (
-    <div className="app">
-      <header className="app-header">
+    <div className='app'>
+      <header className='app-header'>
         <h1>✍️ StoryScribe</h1>
         <p>Your AI-powered writing companion</p>
-        <div className="user-badge">Guest: {userId}</div>
+        <div className='user-badge'>Guest: {userId}</div>
       </header>
 
       <div className="card">

@@ -214,8 +214,10 @@ frontend/.env
 functions/local.settings.json
 
 # Node modules
-frontend/node_modules/
-node_modules/
+**/node_modules/
+
+# Build output
+**/dist/
 
 # Python virtual environment
 backend/venv/
