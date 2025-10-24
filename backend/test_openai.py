@@ -9,10 +9,10 @@ def test_openai():
     try:
         from openai import AzureOpenAI
         
-        endpoint = os.getenv("OPENAI_ENDPOINT")
-        deployment = os.getenv("OPENAI_DEPLOYMENT", "gpt-4o-mini")
-        api_version = os.getenv("OPENAI_API_VERSION", "2024-08-01-preview")
-        api_key = os.getenv("OPENAI_API_KEY")
+        endpoint = os.getenv("AZURE_OPENAI_ENDPOINT")
+        deployment = os.getenv("AZURE_OPENAI_DEPLOYMENT", "gpt-4o-mini")
+        api_version = os.getenv("AZURE_OPENAI_API_VERSION", "2024-08-01-preview")
+        api_key = os.getenv("AZURE_OPENAI_API_KEY")
         
         print(f"Endpoint: {endpoint}")
         print(f"Deployment: {deployment}")
@@ -21,7 +21,7 @@ def test_openai():
         
         if not endpoint or not api_key:
             print("\n❌ Missing credentials!")
-            pytest.fail("Missing required credentials (OPENAI_ENDPOINT or OPENAI_API_KEY)")
+            pytest.fail("Missing required credentials (AZURE_OPENAI_ENDPOINT or AZURE_OPENAI_API_KEY)")
         
         print("\n🔄 Creating Azure OpenAI client...")
         client = AzureOpenAI(
