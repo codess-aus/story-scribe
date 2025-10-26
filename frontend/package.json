@@ -8,7 +8,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint . --ext js,jsx",
-    "test": "echo 'No tests implemented yet' && exit 0"
+    "test": "node test-setup.js"
   },
   "dependencies": {
     "globals": "^16.4.0",
