@@ -78,7 +78,7 @@ const App = () => {
       setPrompt(data.prompt || 'No prompt available');
     } catch (error) {
       console.error('Failed to fetch prompt:', error);
-      setPrompt('Unable to fetch prompt. Please try again.');
+      setPrompt('Unable to fetch prompt: ' + (error?.message || error));
     } finally {
       setLoadingPrompt(false);
     }
