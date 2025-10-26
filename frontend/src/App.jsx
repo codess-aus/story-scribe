@@ -11,17 +11,20 @@ import './App.css';
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
 function randomUserId() {
-  let id = localStorage.getItem('storyscribe_user');
+  if (typeof window === 'undefined') return 'guest_default';
+  
+  let id = window.localStorage.getItem('storyscribe_user');
   if (!id) {
     id = 'guest_' + Math.random().toString(36).slice(2, 10);
-    localStorage.setItem('storyscribe_user', id);
+    window.localStorage.setItem('storyscribe_user', id);
   }
   return id;
 }
 
 const userId = randomUserId();
 
-export default function App() {
+// Main app component
+const App = () => {
   const [stories, setStories] = useState([]);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -37,8 +40,8 @@ export default function App() {
       if (res.ok) {
         setStories(await res.json());
       }
-    } catch (e) {
-      console.error('Failed to load stories:', e);
+    } catch (error) {
+      console.error('Failed to load stories:', error);
     }
   }
 
@@ -60,8 +63,8 @@ export default function App() {
         setTitle('');
         setContent('');
       }
-    } catch (e) {
-      console.error('Failed to create story:', e);
+    } catch (error) {
+      console.error('Failed to create story:', error);
     } finally {
       setSaving(false);
     }
@@ -73,7 +76,8 @@ export default function App() {
       const res = await fetch(`${API_BASE}/prompt?genre=memoir`);
       const data = await res.json();
       setPrompt(data.prompt || 'No prompt available');
-    } catch (e) {
+    } catch (error) {
+      console.error('Failed to fetch prompt:', error);
       setPrompt('Unable to fetch prompt. Please try again.');
     } finally {
       setLoadingPrompt(false);
@@ -164,4 +168,9 @@ export default function App() {
       </div>
     </div>
   );
-}
+};
+
+// Add displayName for React DevTools
+App.displayName = 'App';
+
+export default App;
