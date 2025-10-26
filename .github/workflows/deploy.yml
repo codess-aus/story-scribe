@@ -5,9 +5,23 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    environment: production
+    
+    env:
+      OPENAI_ENDPOINT: ${{ secrets.OPENAI_ENDPOINT }}
+      OPENAI_DEPLOYMENT: gpt-4o-mini
+      OPENAI_API_VERSION: 2024-08-01-preview
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -19,20 +33,25 @@ jobs:
 
       - name: Install backend deps
         run: |
-          pip install -r backend/requirements.txt
-          python - <<'PY'
-import importlib; import sys
-for m in ["fastapi","uvicorn","azure.cosmos"]:
-    if not importlib.util.find_spec(m):
-        print(f"Missing {m}")
-        sys.exit(1)
-print("Dependencies OK.")
-PY
+          cd backend
+          pip install -r requirements.txt
+
+      - name: Azure login
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Run backend tests
+        run: |
+          cd backend
+          pytest test_openai.py -v
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-            node-version: "20"
+          node-version: "20"
 
       - name: Frontend install
         run: |
@@ -45,5 +64,3 @@ PY
         with:
           name: web-dist
           path: frontend/dist
-
-          
