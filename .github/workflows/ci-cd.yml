@@ -77,8 +77,8 @@ jobs:
         working-directory: ./backend
         env:
           AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
-          AZURE_OPENAI_DEPLOYMENT: "gpt-4o-mini"
-          AZURE_OPENAI_API_VERSION: "2024-08-01-preview"
+          OPENAI_DEPLOYMENT: "gpt-4o-mini"
+          OPENAI_API_VERSION: "2024-08-01-preview"
         run: pytest
 
       - name: Run frontend linting

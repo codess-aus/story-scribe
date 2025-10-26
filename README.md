@@ -112,7 +112,7 @@ story-scribe/
 2. Deploy `gpt-4o-mini` model
 3. Update `backend/.env`:
    ```bash
-   OPENAI_ENDPOINT=https://YOUR-RESOURCE.openai.azure.com
+   AZURE_OPENAI_ENDPOINT=https://YOUR-RESOURCE.openai.azure.com
    OPENAI_DEPLOYMENT=gpt-4o-mini
    OPENAI_API_KEY=your-key-here
    ```

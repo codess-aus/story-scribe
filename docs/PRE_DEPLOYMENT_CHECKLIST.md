@@ -197,7 +197,7 @@ az webapp config appsettings set \
   --name storyscribe-app \
   --resource-group storyscribe-rg \
   --settings \
-    OPENAI_ENDPOINT="https://storyscribe-openai.openai.azure.com" \
+    AZURE_OPENAI_ENDPOINT="https://storyscribe-openai.openai.azure.com" \
     OPENAI_DEPLOYMENT="gpt-4o-mini" \
     OPENAI_API_VERSION="2024-08-01-preview"
 ```

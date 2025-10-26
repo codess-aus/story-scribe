@@ -127,7 +127,7 @@ curl http://localhost:8000/stories \
 Copy `.env.example` to `.env` in each directory and configure:
 
 **Backend (.env):**
-- `OPENAI_ENDPOINT` - Azure OpenAI endpoint (future)
+- `AZURE_OPENAI_ENDPOINT` - Azure OpenAI endpoint (future)
 - `OPENAI_DEPLOYMENT` - Model deployment name (future)
 - `COSMOS_ENDPOINT` - Cosmos DB endpoint (future)
 

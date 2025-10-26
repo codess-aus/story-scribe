@@ -49,7 +49,7 @@ curl "https://storyscribe-web-btbhgaduc3fubbhd.swedencentral-01.azurewebsites.ne
 ### 📦 What's Been Deployed
 
 1. ✅ Backend application code
-2. ✅ Environment variables (OPENAI_ENDPOINT, OPENAI_API_KEY, etc.)
+2. ✅ Environment variables (AZURE_OPENAI_ENDPOINT, OPENAI_API_KEY, etc.)
 3. ✅ CORS configuration (currently allowing all origins for testing)
 4. ✅ Startup command with Gunicorn/Uvicorn
 5. ✅ Python dependencies installed

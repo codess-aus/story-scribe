@@ -1,13 +1,12 @@
 {
   "name": "StoryScribe Dev",
-  "image": "mcr.microsoft.com/devcontainers/javascript-node:20",
+  "image": "mcr.microsoft.com/devcontainers/python:3.12-bullseye",
   "features": {
-    "ghcr.io/devcontainers/features/python:1": {
-      "version": "3.12"
-    },
-    "ghcr.io/devcontainers/features/azure-cli:1": {}
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "20"
+    }
   },
-  "postCreateCommand": "bash scripts/local-run.sh",
+  "postCreateCommand": "curl -sL https://aka.ms/InstallAzureCLIDeb | bash && bash scripts/local-run.sh",
   "forwardPorts": [8000, 5173],
   "customizations": {
     "vscode": {

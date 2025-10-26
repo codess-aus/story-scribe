@@ -19,7 +19,7 @@ cp .env.example frontend/.env
 **Backend `.env`:**
 ```bash
 # Azure OpenAI (for AI-powered prompts)
-OPENAI_ENDPOINT=https://YOUR-RESOURCE.openai.azure.com
+AZURE_OPENAI_ENDPOINT=https://YOUR-RESOURCE.openai.azure.com
 OPENAI_DEPLOYMENT=gpt-4o-mini
 OPENAI_API_VERSION=2024-08-01-preview
 

@@ -19,7 +19,7 @@ def test_openai():
         
         from azure.identity import DefaultAzureCredential
 
-        endpoint = os.getenv("OPENAI_ENDPOINT")
+        endpoint = os.getenv("AZURE_OPENAI_ENDPOINT")
         deployment = os.getenv("OPENAI_DEPLOYMENT", "gpt-4o-mini")
         api_version = os.getenv("OPENAI_API_VERSION", "2024-08-01-preview")
         
@@ -30,7 +30,7 @@ def test_openai():
         
         if not endpoint:
             print("\n❌ Missing endpoint!")
-            pytest.fail("Missing required OPENAI_ENDPOINT environment variable")
+            pytest.fail("Missing required AZURE_OPENAI_ENDPOINT environment variable")
             
         # Get Azure credential token
         print("\n🔄 Getting Azure credentials...")

@@ -23,7 +23,7 @@ Capacity: 10 TPM
 
 ### Backend Environment Variables (`backend/.env`)
 ```bash
-OPENAI_ENDPOINT=https://storyscribe-openai.cognitiveservices.azure.com/
+AZURE_OPENAI_ENDPOINT=https://storyscribe-openai.cognitiveservices.azure.com/
 OPENAI_DEPLOYMENT=gpt-4o-mini
 OPENAI_API_VERSION=2024-08-01-preview
 OPENAI_API_KEY=DNHbdo9aAwPssLTLm2LffoMAmzza5cObFljT06rdbUfNxhcDCoDgJQQJ99BJACOGXj6h

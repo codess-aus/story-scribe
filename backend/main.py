@@ -87,7 +87,7 @@ def get_openai_client():
     try:
         from openai import AzureOpenAI
         
-        endpoint = os.getenv("OPENAI_ENDPOINT")
+        endpoint = os.getenv("AZURE_OPENAI_ENDPOINT")
         deployment = os.getenv("OPENAI_DEPLOYMENT", "gpt-4o-mini")
         api_version = os.getenv("OPENAI_API_VERSION", "2024-08-01-preview")
         api_key = os.getenv("OPENAI_API_KEY")
@@ -220,7 +220,7 @@ def get_prompt(genre: str = "memoir", mood: Optional[str] = None, preferences: O
     Generate a writing prompt, using Azure OpenAI if available, otherwise fallback to static prompts.
     
     This endpoint supports:
-    - AI-powered prompts via Azure OpenAI (if OPENAI_ENDPOINT is configured)
+    - AI-powered prompts via Azure OpenAI (if AZURE_OPENAI_ENDPOINT is configured)
     - Static fallback prompts (if Azure OpenAI is not configured)
     """
     genre_lower = genre.lower()
