@@ -217,54 +217,6 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Assign Storage Permissions to Function App Identity
-        uses: azure/cli@v2
-        with:
-          inlineScript: |
-            echo "🔍 Configuring storage permissions for Function App deployment..."
-            
-            # Get the Function App's system-assigned managed identity principal ID
-            FUNCTION_IDENTITY=$(az functionapp identity show \
-              --name ${{ env.AZURE_FUNCTIONS_NAME }} \
-              --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
-              --query principalId -o tsv 2>/dev/null || echo "")
-            
-            if [ -z "$FUNCTION_IDENTITY" ]; then
-              echo "⚠️  No system identity found, enabling it..."
-              az functionapp identity assign \
-                --name ${{ env.AZURE_FUNCTIONS_NAME }} \
-                --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }}
-              
-              # Get the identity again after enabling
-              FUNCTION_IDENTITY=$(az functionapp identity show \
-                --name ${{ env.AZURE_FUNCTIONS_NAME }} \
-                --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
-                --query principalId -o tsv)
-            fi
-            
-            echo "✓ Function App Identity: $FUNCTION_IDENTITY"
-            
-            # Find the storage account
-            STORAGE_ACCOUNT=$(az storage account list \
-              --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
-              --query "[?contains(name, 'storyscribe')].name | [0]" -o tsv)
-            
-            echo "✓ Storage Account: $STORAGE_ACCOUNT"
-            
-            # Assign Storage Blob Data Contributor role
-            SCOPE="/subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/${{ secrets.AZURE_RESOURCE_GROUP }}/providers/Microsoft.Storage/storageAccounts/$STORAGE_ACCOUNT"
-            
-            echo "Assigning Storage Blob Data Contributor role..."
-            az role assignment create \
-              --assignee $FUNCTION_IDENTITY \
-              --role "Storage Blob Data Contributor" \
-              --scope "$SCOPE" \
-              2>/dev/null && echo "✅ Role assigned" || echo "✓ Role already exists"
-            
-            # Wait for propagation
-            echo "Waiting 30s for Azure to propagate permissions..."
-            sleep 30
-
       - name: Create deployment package
         working-directory: ./functions
         run: |
@@ -282,19 +234,51 @@ jobs:
             --build-remote false
           echo "✅ Deployment completed"
 
-      - name: Configure Azure Function App Settings
+      - name: Configure Storage Connection and App Settings
         uses: azure/cli@v2
         with:
           inlineScript: |
-            # Set application settings for the function app
+            echo "Configuring Function App to use storage account key..."
+            
+            # Get storage account name
+            STORAGE_ACCOUNT=$(az storage account list \
+              --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+              --query "[?contains(name, 'storyscribe')].name | [0]" -o tsv)
+            
+            echo "Storage Account: $STORAGE_ACCOUNT"
+            
+            # Get storage account connection string
+            STORAGE_CONNECTION=$(az storage account show-connection-string \
+              --name $STORAGE_ACCOUNT \
+              --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+              --query connectionString -o tsv)
+            
+            echo "✓ Retrieved storage connection string"
+            
+            # Remove identity-based storage settings and use connection string instead
+            az functionapp config appsettings delete \
+              --name ${{ env.AZURE_FUNCTIONS_NAME }} \
+              --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+              --setting-names \
+                AzureWebJobsStorage__blobServiceUri \
+                AzureWebJobsStorage__clientId \
+                AzureWebJobsStorage__credential \
+                AzureWebJobsStorage__queueServiceUri \
+                AzureWebJobsStorage__tableServiceUri \
+              2>/dev/null || echo "Settings already removed or don't exist"
+            
+            # Set storage connection string and app settings
             az functionapp config appsettings set --name ${{ env.AZURE_FUNCTIONS_NAME }} \
               --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
               --settings \
+                AzureWebJobsStorage="$STORAGE_CONNECTION" \
                 CONTENT_SAFETY_ENDPOINT=${{ secrets.CONTENT_SAFETY_ENDPOINT }} \
                 AZURE_OPENAI_ENDPOINT=${{ secrets.AZURE_OPENAI_ENDPOINT }} \
                 OPENAI_DEPLOYMENT=gpt-4o-mini \
                 OPENAI_API_VERSION=2024-08-01-preview \
                 WEBSITE_RUN_FROM_PACKAGE=1
+            
+            echo "✅ Configuration complete"
 
       - name: Log deployment status
         run: |
