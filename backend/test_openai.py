@@ -2,8 +2,16 @@
 import os
 import pytest
 from dotenv import load_dotenv
+from pathlib import Path
 
-load_dotenv()
+# Print current working directory and .env file location
+print(f"\nCurrent working directory: {os.getcwd()}")
+env_path = Path(__file__).parent / '.env'
+print(f".env file path: {env_path}")
+print(f".env file exists: {env_path.exists()}")
+
+# Load environment variables
+load_dotenv(env_path)
 
 def test_openai():
     try:

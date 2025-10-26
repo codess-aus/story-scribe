@@ -19,12 +19,18 @@ const StoryInterface = () => {
   const { storyId } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
-  // Ensure user is available before operations
+  const editorRef = useRef(null);
+
+  // Redirect to login if user is not authenticated
+  useEffect(() => {
+    if (!user) {
+      navigate('/login');
+    }
+  }, [user, navigate]);
+
   if (!user) {
-    navigate('/login');
     return null;
   }
-  const editorRef = useRef(null);
   
   // State variables
   const [story, setStory] = useState({
