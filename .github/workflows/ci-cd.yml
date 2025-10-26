@@ -18,8 +18,9 @@ permissions:
 env:
   NODE_VERSION: '20'
   PYTHON_VERSION: '3.12'
-  AZURE_WEBAPP_NAME: story-scribe-app
-  AZURE_FUNCTIONS_NAME: story-scribe-functions
+  AZURE_WEBAPP_NAME: storyscribe-web
+  AZURE_FUNCTIONS_NAME: storyscribe-func
+  AZURE_STATIC_WEB_APP_NAME: storyscribe-frontend
 
 jobs:
   test:
@@ -183,11 +184,7 @@ jobs:
     name: Deploy to Azure
     runs-on: ubuntu-latest
     needs: build
-    # Only run if explicitly enabled and on main branch
-    if: |
-      github.ref == 'refs/heads/main' && 
-      (github.event_name == 'push' || github.event_name == 'workflow_dispatch') &&
-      vars.ENABLE_AZURE_DEPLOYMENT == 'true'
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
     environment: production
     
     steps:
@@ -216,29 +213,30 @@ jobs:
           inlineScript: |
             echo "Checking if Azure resources exist..."
             
-            # Check Web App
-            if az webapp show --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} 2>/dev/null; then
-              echo "✅ Web App '${{ env.AZURE_WEBAPP_NAME }}' exists"
-            else
-              echo "❌ Web App '${{ env.AZURE_WEBAPP_NAME }}' not found"
-              echo "Create it with: az webapp create --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} --plan <APP_SERVICE_PLAN> --name ${{ env.AZURE_WEBAPP_NAME }} --runtime 'NODE:20-lts'"
-              exit 1
-            fi
-            
             # Check Function App
             if az functionapp show --name ${{ env.AZURE_FUNCTIONS_NAME }} --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} 2>/dev/null; then
               echo "✅ Function App '${{ env.AZURE_FUNCTIONS_NAME }}' exists"
             else
               echo "❌ Function App '${{ env.AZURE_FUNCTIONS_NAME }}' not found"
-              echo "Create it with: az functionapp create --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} --consumption-plan-location <LOCATION> --name ${{ env.AZURE_FUNCTIONS_NAME }} --runtime python --runtime-version 3.12 --storage-account <STORAGE_ACCOUNT>"
+              exit 1
+            fi
+            
+            # Check Static Web App
+            if az staticwebapp show --name ${{ env.AZURE_STATIC_WEB_APP_NAME }} --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} 2>/dev/null; then
+              echo "✅ Static Web App '${{ env.AZURE_STATIC_WEB_APP_NAME }}' exists"
+            else
+              echo "❌ Static Web App '${{ env.AZURE_STATIC_WEB_APP_NAME }}' not found"
               exit 1
             fi
 
-      - name: Deploy frontend to Azure Web App
-        uses: azure/webapps-deploy@v3
+      - name: Deploy frontend to Azure Static Web App
+        uses: Azure/static-web-apps-deploy@v1
         with:
-          app-name: ${{ env.AZURE_WEBAPP_NAME }}
-          package: frontend/dist
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          action: "upload"
+          app_location: "frontend/dist"
+          skip_app_build: true
 
       - name: Deploy backend to Azure Functions
         uses: azure/functions-action@v1
@@ -263,5 +261,5 @@ jobs:
       - name: Log deployment status
         run: |
           echo "✅ Deployment completed successfully at $(date)"
-          echo "Frontend: https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net"
-          echo "Backend: https://${{ env.AZURE_FUNCTIONS_NAME }}.azurewebsites.net"
+          echo "Frontend (Static Web App): https://${{ env.AZURE_STATIC_WEB_APP_NAME }}.azurestaticapps.net"
+          echo "Backend (Function App): https://${{ env.AZURE_FUNCTIONS_NAME }}.azurewebsites.net"
