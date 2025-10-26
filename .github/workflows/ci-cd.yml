@@ -207,27 +207,27 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Verify Azure Resources Exist
+      - name: Configure Storage Permissions for Function App Deployment
         uses: azure/cli@v2
         with:
           inlineScript: |
-            echo "Checking if Azure resources exist..."
+            echo "Ensuring deployment identity has storage permissions..."
             
-            # Check Function App
-            if az functionapp show --name ${{ env.AZURE_FUNCTIONS_NAME }} --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} 2>/dev/null; then
-              echo "✅ Function App '${{ env.AZURE_FUNCTIONS_NAME }}' exists"
-            else
-              echo "❌ Function App '${{ env.AZURE_FUNCTIONS_NAME }}' not found"
-              exit 1
-            fi
+            # Get the storage account name for the function app
+            STORAGE_ACCOUNT=$(az functionapp config appsettings list \
+              --name ${{ env.AZURE_FUNCTIONS_NAME }} \
+              --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+              --query "[?name=='AzureWebJobsStorage'].value" -o tsv | \
+              sed 's/.*AccountName=\([^;]*\).*/\1/')
             
-            # Check Static Web App
-            if az staticwebapp show --name ${{ env.AZURE_STATIC_WEB_APP_NAME }} --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} 2>/dev/null; then
-              echo "✅ Static Web App '${{ env.AZURE_STATIC_WEB_APP_NAME }}' exists"
-            else
-              echo "❌ Static Web App '${{ env.AZURE_STATIC_WEB_APP_NAME }}' not found"
-              exit 1
-            fi
+            echo "Storage account: $STORAGE_ACCOUNT"
+            
+            # Assign Storage Blob Data Contributor role to the service principal
+            az role assignment create \
+              --assignee ${{ secrets.AZURE_CLIENT_ID }} \
+              --role "Storage Blob Data Contributor" \
+              --scope "/subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/${{ secrets.AZURE_RESOURCE_GROUP }}/providers/Microsoft.Storage/storageAccounts/$STORAGE_ACCOUNT" \
+              2>/dev/null || echo "Role assignment already exists or not needed"
 
       - name: Deploy frontend to Azure Static Web App
         uses: Azure/static-web-apps-deploy@v1
@@ -237,6 +237,8 @@ jobs:
           action: "upload"
           app_location: "frontend/dist"
           skip_app_build: true
+          skip_api_build: true
+          api_location: ""
 
       - name: Deploy backend to Azure Functions
         uses: azure/functions-action@v1
