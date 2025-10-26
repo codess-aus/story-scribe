@@ -217,6 +217,60 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
+      - name: Prepare Function App Storage (File Share & App Settings)
+        uses: azure/cli@v2
+        with:
+          inlineScript: |
+            echo "🔧 Preparing storage prerequisites for Function App deployment..."
+            STORAGE_ACCOUNT=$(az storage account list \
+              --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+              --query "[?contains(name, 'storyscribe')].name | [0]" -o tsv)
+            if [ -z "$STORAGE_ACCOUNT" ]; then
+              echo "❌ Could not determine storage account name in resource group"
+              exit 1
+            fi
+            echo "✓ Storage Account: $STORAGE_ACCOUNT"
+
+            # Get connection string (requires shared key access enabled on the storage account)
+            STORAGE_CONNECTION=$(az storage account show-connection-string \
+              --name $STORAGE_ACCOUNT \
+              --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+              --query connectionString -o tsv)
+            if [ -z "$STORAGE_CONNECTION" ]; then
+              echo "❌ Failed to retrieve storage connection string. Ensure 'Allow storage account key access' is enabled."
+              exit 1
+            fi
+            echo "✓ Retrieved storage connection string (hidden)"
+
+            # Create (or ensure) file share for content (WEBSITE_CONTENTSHARE)
+            CONTENT_SHARE="storyscribefunccontent"
+            echo "Ensuring Azure Files share '$CONTENT_SHARE' exists..."
+            az storage share create --name "$CONTENT_SHARE" --connection-string "$STORAGE_CONNECTION" 2>/dev/null \
+              && echo "✓ File share created" || echo "(Info) File share may already exist"
+
+            echo "Setting core Function App storage-related app settings BEFORE zip deployment..."
+            az functionapp config appsettings set --name ${{ env.AZURE_FUNCTIONS_NAME }} \
+              --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+              --settings \
+                AzureWebJobsStorage="$STORAGE_CONNECTION" \
+                WEBSITE_CONTENTAZUREFILECONNECTIONSTRING="$STORAGE_CONNECTION" \
+                WEBSITE_CONTENTSHARE="$CONTENT_SHARE" \
+                WEBSITE_RUN_FROM_PACKAGE=1 \
+                OPENAI_DEPLOYMENT=gpt-4o-mini \
+                OPENAI_API_VERSION=2024-08-01-preview \
+                AZURE_OPENAI_ENDPOINT=${{ secrets.AZURE_OPENAI_ENDPOINT }} \
+                CONTENT_SAFETY_ENDPOINT=${{ secrets.CONTENT_SAFETY_ENDPOINT }}
+            echo "✓ Pre-deployment app settings applied"
+
+            echo "Removing identity-based storage override keys if present (safe to ignore errors)..."
+            az functionapp config appsettings delete --name ${{ env.AZURE_FUNCTIONS_NAME }} \
+              --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+              --setting-names AzureWebJobsStorage__blobServiceUri AzureWebJobsStorage__clientId AzureWebJobsStorage__credential AzureWebJobsStorage__queueServiceUri AzureWebJobsStorage__tableServiceUri 2>/dev/null || true
+            echo "✓ Cleaned up identity-based storage keys"
+
+            echo "Waiting 20s for settings to propagate before deployment..."
+            sleep 20
+
       - name: Create deployment package
         working-directory: ./functions
         run: |
@@ -224,61 +278,43 @@ jobs:
           zip -r ../functions-deploy.zip . -x "*.pyc" -x "__pycache__/*" -x ".venv/*" -x "*.zip"
           ls -lh ../functions-deploy.zip
 
-      - name: Deploy backend to Azure Functions using Azure CLI
+      - name: Deploy backend to Azure Functions (Zip Deploy)
         run: |
-          echo "Deploying to Azure Functions..."
-          az functionapp deployment source config-zip \
+          echo "Deploying to Azure Functions (Zip Deploy)..."
+          set -e
+          DEPLOY_ID=$(az functionapp deployment source config-zip \
             --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
             --name ${{ env.AZURE_FUNCTIONS_NAME }} \
             --src functions-deploy.zip \
-            --build-remote false
-          echo "✅ Deployment completed"
+            --build-remote false \
+            --query deploymentId -o tsv || echo "")
+          echo "Requested deployment id: $DEPLOY_ID"
+          echo "Polling deployment status..."
+          for i in $(seq 1 15); do
+            STATUS=$(curl -s "https://${{ env.AZURE_FUNCTIONS_NAME }}.scm.azurewebsites.net/api/deployments/$DEPLOY_ID" \
+              -H "Authorization: Basic $(echo -n ":$(az webapp deployment list-publishing-credentials -n ${{ env.AZURE_FUNCTIONS_NAME }} -g ${{ secrets.AZURE_RESOURCE_GROUP }} --query publishingUserName -o tsv):$(az webapp deployment list-publishing-credentials -n ${{ env.AZURE_FUNCTIONS_NAME }} -g ${{ secrets.AZURE_RESOURCE_GROUP }} --query publishingPassword -o tsv)" | base64)" \
+              | jq -r '.status // "unknown"' || echo "unknown")
+            echo "Attempt $i: status=$STATUS"
+            if [ "$STATUS" = "4" ]; then
+              echo "✅ Deployment finished successfully"
+              break
+            elif [ "$STATUS" = "3" ]; then
+              echo "❌ Deployment failed"
+              exit 1
+            fi
+            sleep 5
+          done
+          echo "Zip Deploy step completed"
 
-      - name: Configure Storage Connection and App Settings
+      - name: Post-Deployment Verification (App Settings Snapshot)
         uses: azure/cli@v2
         with:
           inlineScript: |
-            echo "Configuring Function App to use storage account key..."
-            
-            # Get storage account name
-            STORAGE_ACCOUNT=$(az storage account list \
-              --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
-              --query "[?contains(name, 'storyscribe')].name | [0]" -o tsv)
-            
-            echo "Storage Account: $STORAGE_ACCOUNT"
-            
-            # Get storage account connection string
-            STORAGE_CONNECTION=$(az storage account show-connection-string \
-              --name $STORAGE_ACCOUNT \
-              --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
-              --query connectionString -o tsv)
-            
-            echo "✓ Retrieved storage connection string"
-            
-            # Remove identity-based storage settings and use connection string instead
-            az functionapp config appsettings delete \
+            echo "Capturing a snapshot of critical app settings after deployment..."
+            az functionapp config appsettings list \
               --name ${{ env.AZURE_FUNCTIONS_NAME }} \
               --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
-              --setting-names \
-                AzureWebJobsStorage__blobServiceUri \
-                AzureWebJobsStorage__clientId \
-                AzureWebJobsStorage__credential \
-                AzureWebJobsStorage__queueServiceUri \
-                AzureWebJobsStorage__tableServiceUri \
-              2>/dev/null || echo "Settings already removed or don't exist"
-            
-            # Set storage connection string and app settings
-            az functionapp config appsettings set --name ${{ env.AZURE_FUNCTIONS_NAME }} \
-              --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
-              --settings \
-                AzureWebJobsStorage="$STORAGE_CONNECTION" \
-                CONTENT_SAFETY_ENDPOINT=${{ secrets.CONTENT_SAFETY_ENDPOINT }} \
-                AZURE_OPENAI_ENDPOINT=${{ secrets.AZURE_OPENAI_ENDPOINT }} \
-                OPENAI_DEPLOYMENT=gpt-4o-mini \
-                OPENAI_API_VERSION=2024-08-01-preview \
-                WEBSITE_RUN_FROM_PACKAGE=1
-            
-            echo "✅ Configuration complete"
+              --query "[?name=='AzureWebJobsStorage' || name=='WEBSITE_CONTENTSHARE' || name=='WEBSITE_RUN_FROM_PACKAGE'].{name:name,value:value}" -o table || echo "(Warning) Unable to read back settings"
 
       - name: Log deployment status
         run: |
