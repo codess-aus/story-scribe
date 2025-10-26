@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react()],
   build: {
     target: 'es2015',
-    minify: 'terser',
+    minify: 'esbuild', // Use esbuild (default, faster than terser)
     sourcemap: false,
     rollupOptions: {
       output: {
