@@ -213,22 +213,36 @@ jobs:
           inlineScript: |
             echo "Ensuring deployment identity has storage permissions..."
             
-            # Get the storage account name for the function app
-            STORAGE_ACCOUNT=$(az functionapp config appsettings list \
+            # Get the storage account connection string
+            CONNECTION_STRING=$(az functionapp config appsettings list \
               --name ${{ env.AZURE_FUNCTIONS_NAME }} \
               --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
-              --query "[?name=='AzureWebJobsStorage'].value" -o tsv | \
-              sed 's/.*AccountName=\([^;]*\).*/\1/')
+              --query "[?name=='AzureWebJobsStorage'].value" -o tsv)
+            
+            echo "Connection string retrieved: ${CONNECTION_STRING:0:50}..."
+            
+            # Extract storage account name using grep and cut
+            STORAGE_ACCOUNT=$(echo "$CONNECTION_STRING" | grep -oP 'AccountName=\K[^;]+' || echo "")
+            
+            if [ -z "$STORAGE_ACCOUNT" ]; then
+              echo "ERROR: Could not extract storage account name from connection string"
+              echo "Connection string format: $CONNECTION_STRING"
+              exit 1
+            fi
             
             echo "Storage account: $STORAGE_ACCOUNT"
+            
+            # Build the scope string
+            SCOPE="/subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/${{ secrets.AZURE_RESOURCE_GROUP }}/providers/Microsoft.Storage/storageAccounts/$STORAGE_ACCOUNT"
+            echo "Scope: $SCOPE"
             
             # Assign Storage Blob Data Contributor role to the service principal
             echo "Assigning Storage Blob Data Contributor role..."
             az role assignment create \
               --assignee ${{ secrets.AZURE_CLIENT_ID }} \
               --role "Storage Blob Data Contributor" \
-              --scope "/subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/${{ secrets.AZURE_RESOURCE_GROUP }}/providers/Microsoft.Storage/storageAccounts/$STORAGE_ACCOUNT" \
-              2>/dev/null || echo "Role assignment already exists"
+              --scope "$SCOPE" \
+              2>/dev/null || echo "Role assignment already exists or failed (non-fatal)"
             
             # Give Azure time to propagate the role assignment
             echo "Waiting for role assignment to propagate..."
@@ -238,7 +252,7 @@ jobs:
             echo "Verifying role assignment..."
             az role assignment list \
               --assignee ${{ secrets.AZURE_CLIENT_ID }} \
-              --scope "/subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/${{ secrets.AZURE_RESOURCE_GROUP }}/providers/Microsoft.Storage/storageAccounts/$STORAGE_ACCOUNT" \
+              --scope "$SCOPE" \
               --query "[?roleDefinitionName=='Storage Blob Data Contributor'].roleDefinitionName" -o tsv || echo "Verification skipped"
 
       - name: Deploy frontend to Azure Static Web App
