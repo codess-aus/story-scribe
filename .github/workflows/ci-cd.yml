@@ -210,22 +210,29 @@ jobs:
           skip_api_build: true
           api_location: ""
 
-      - name: Deploy backend to Azure Functions
-        uses: azure/functions-action@v1
-        with:
-          app-name: ${{ env.AZURE_FUNCTIONS_NAME }}
-          package: functions
-          publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
-          respect-funcignore: true
-          scm-do-build-during-deployment: false
-          enable-oryx-build: false
-
-      - name: Azure Login (for App Settings Configuration)
+      - name: Azure Login (for Function App Deployment)
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Create deployment package
+        working-directory: ./functions
+        run: |
+          echo "Creating deployment package..."
+          zip -r ../functions-deploy.zip . -x "*.pyc" -x "__pycache__/*" -x ".venv/*" -x "*.zip"
+          ls -lh ../functions-deploy.zip
+
+      - name: Deploy backend to Azure Functions using Azure CLI
+        run: |
+          echo "Deploying to Azure Functions..."
+          az functionapp deployment source config-zip \
+            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+            --name ${{ env.AZURE_FUNCTIONS_NAME }} \
+            --src functions-deploy.zip \
+            --build-remote false
+          echo "✅ Deployment completed"
 
       - name: Configure Azure Function App Settings
         uses: azure/cli@v2
