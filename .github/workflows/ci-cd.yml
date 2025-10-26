@@ -158,11 +158,11 @@ jobs:
         working-directory: ./frontend
         run: npm run build
 
-      - name: Install backend dependencies
-        working-directory: ./backend
+      - name: Install backend dependencies for Functions
+        working-directory: ./functions
         run: |
           pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install --target=".python_packages/lib/site-packages" -r requirements.txt
 
       - name: Upload frontend build artifacts
         uses: actions/upload-artifact@v4
@@ -217,6 +217,8 @@ jobs:
           package: functions
           publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
           respect-funcignore: true
+          scm-do-build-during-deployment: false
+          enable-oryx-build: false
 
       - name: Azure Login (for App Settings Configuration)
         uses: azure/login@v2
