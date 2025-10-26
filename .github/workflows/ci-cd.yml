@@ -200,53 +200,6 @@ jobs:
           name: backend-files
           path: backend
 
-      - name: Azure Login (Federated Credentials)
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-      - name: Verify Storage Permissions
-        uses: azure/cli@v2
-        with:
-          inlineScript: |
-            echo "🔍 Verifying deployment permissions..."
-            
-            # Find the storage account
-            STORAGE_ACCOUNT=$(az storage account list \
-              --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
-              --query "[?contains(name, 'storyscribe') || contains(name, 'func')].name | [0]" -o tsv 2>/dev/null)
-            
-            if [ -z "$STORAGE_ACCOUNT" ]; then
-              STORAGE_ACCOUNT=$(az storage account list \
-                --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
-                --query "[0].name" -o tsv 2>/dev/null)
-            fi
-            
-            if [ -z "$STORAGE_ACCOUNT" ]; then
-              echo "❌ ERROR: Could not find storage account in resource group"
-              exit 1
-            fi
-            
-            echo "✓ Storage account: $STORAGE_ACCOUNT"
-            
-            # Check if the service principal has the required role
-            SCOPE="/subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/${{ secrets.AZURE_RESOURCE_GROUP }}/providers/Microsoft.Storage/storageAccounts/$STORAGE_ACCOUNT"
-            
-            ROLE_CHECK=$(az role assignment list \
-              --assignee ${{ secrets.AZURE_CLIENT_ID }} \
-              --scope "$SCOPE" \
-              --query "[?roleDefinitionName=='Storage Blob Data Contributor'].roleDefinitionName" -o tsv 2>/dev/null)
-            
-            if [ -n "$ROLE_CHECK" ]; then
-              echo "✅ Service principal has Storage Blob Data Contributor role"
-            else
-              echo "⚠️  WARNING: Service principal may not have Storage Blob Data Contributor role"
-              echo "📖 If deployment fails with 403 error, see: docs/AZURE_PERMISSIONS_SETUP.md"
-              echo "   You need to manually assign the role in Azure Portal"
-            fi
-
       - name: Deploy frontend to Azure Static Web App
         uses: Azure/static-web-apps-deploy@v1
         with:
@@ -263,6 +216,14 @@ jobs:
         with:
           app-name: ${{ env.AZURE_FUNCTIONS_NAME }}
           package: backend
+          publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
+
+      - name: Azure Login (for App Settings Configuration)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Configure Azure Function App Settings
         uses: azure/cli@v2
