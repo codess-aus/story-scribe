@@ -213,24 +213,51 @@ jobs:
           inlineScript: |
             echo "Ensuring deployment identity has storage permissions..."
             
-            # Get the storage account connection string
+            # Method 1: Try to get storage account from Function App settings
+            echo "Attempting to retrieve storage account from Function App settings..."
             CONNECTION_STRING=$(az functionapp config appsettings list \
               --name ${{ env.AZURE_FUNCTIONS_NAME }} \
               --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
-              --query "[?name=='AzureWebJobsStorage'].value" -o tsv)
+              --query "[?name=='AzureWebJobsStorage'].value" -o tsv 2>/dev/null || echo "")
             
-            echo "Connection string retrieved: ${CONNECTION_STRING:0:50}..."
+            STORAGE_ACCOUNT=""
             
-            # Extract storage account name using grep and cut
-            STORAGE_ACCOUNT=$(echo "$CONNECTION_STRING" | grep -oP 'AccountName=\K[^;]+' || echo "")
+            if [ -n "$CONNECTION_STRING" ]; then
+              echo "Connection string found: ${CONNECTION_STRING:0:50}..."
+              # Try multiple extraction patterns
+              STORAGE_ACCOUNT=$(echo "$CONNECTION_STRING" | grep -oP 'AccountName=\K[^;]+' 2>/dev/null || \
+                               echo "$CONNECTION_STRING" | sed -n 's/.*AccountName=\([^;]*\).*/\1/p' 2>/dev/null || \
+                               echo "")
+            fi
             
+            # Method 2: If extraction failed, query storage accounts directly
             if [ -z "$STORAGE_ACCOUNT" ]; then
-              echo "ERROR: Could not extract storage account name from connection string"
-              echo "Connection string format: $CONNECTION_STRING"
+              echo "Could not extract from connection string, querying storage accounts in resource group..."
+              STORAGE_ACCOUNT=$(az storage account list \
+                --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+                --query "[0].name" -o tsv 2>/dev/null || echo "")
+            fi
+            
+            # Method 3: Use naming convention (fallback)
+            if [ -z "$STORAGE_ACCOUNT" ]; then
+              echo "Attempting to use naming convention..."
+              # Function apps typically use storage account named similarly
+              STORAGE_ACCOUNT=$(az storage account list \
+                --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+                --query "[?contains(name, 'storyscribe') || contains(name, 'func')].name | [0]" -o tsv 2>/dev/null || echo "")
+            fi
+            
+            # Final validation
+            if [ -z "$STORAGE_ACCOUNT" ]; then
+              echo "ERROR: Could not determine storage account name"
+              echo "Available storage accounts in resource group:"
+              az storage account list \
+                --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+                --query "[].name" -o tsv || echo "Failed to list storage accounts"
               exit 1
             fi
             
-            echo "Storage account: $STORAGE_ACCOUNT"
+            echo "✓ Storage account identified: $STORAGE_ACCOUNT"
             
             # Build the scope string
             SCOPE="/subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/${{ secrets.AZURE_RESOURCE_GROUP }}/providers/Microsoft.Storage/storageAccounts/$STORAGE_ACCOUNT"
@@ -238,22 +265,33 @@ jobs:
             
             # Assign Storage Blob Data Contributor role to the service principal
             echo "Assigning Storage Blob Data Contributor role..."
-            az role assignment create \
+            ASSIGNMENT_RESULT=$(az role assignment create \
               --assignee ${{ secrets.AZURE_CLIENT_ID }} \
               --role "Storage Blob Data Contributor" \
               --scope "$SCOPE" \
-              2>/dev/null || echo "Role assignment already exists or failed (non-fatal)"
+              2>&1 || echo "existing")
             
-            # Give Azure time to propagate the role assignment
-            echo "Waiting for role assignment to propagate..."
-            sleep 30
+            if echo "$ASSIGNMENT_RESULT" | grep -q "existing\|already exists"; then
+              echo "✓ Role assignment already exists"
+            else
+              echo "✓ Role assignment created successfully"
+              # Give Azure time to propagate the role assignment
+              echo "Waiting 30s for role assignment to propagate..."
+              sleep 30
+            fi
             
             # Verify the role assignment
             echo "Verifying role assignment..."
-            az role assignment list \
+            ROLE_CHECK=$(az role assignment list \
               --assignee ${{ secrets.AZURE_CLIENT_ID }} \
               --scope "$SCOPE" \
-              --query "[?roleDefinitionName=='Storage Blob Data Contributor'].roleDefinitionName" -o tsv || echo "Verification skipped"
+              --query "[?roleDefinitionName=='Storage Blob Data Contributor'].roleDefinitionName" -o tsv 2>/dev/null || echo "")
+            
+            if [ -n "$ROLE_CHECK" ]; then
+              echo "✓ Role assignment verified: $ROLE_CHECK"
+            else
+              echo "⚠ Warning: Could not verify role assignment (may still work)"
+            fi
 
       - name: Deploy frontend to Azure Static Web App
         uses: Azure/static-web-apps-deploy@v1
