@@ -183,7 +183,11 @@ jobs:
     name: Deploy to Azure
     runs-on: ubuntu-latest
     needs: build
-    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    # Only run if explicitly enabled and on main branch
+    if: |
+      github.ref == 'refs/heads/main' && 
+      (github.event_name == 'push' || github.event_name == 'workflow_dispatch') &&
+      vars.ENABLE_AZURE_DEPLOYMENT == 'true'
     environment: production
     
     steps:
@@ -205,6 +209,30 @@ jobs:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Verify Azure Resources Exist
+        uses: azure/cli@v2
+        with:
+          inlineScript: |
+            echo "Checking if Azure resources exist..."
+            
+            # Check Web App
+            if az webapp show --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} 2>/dev/null; then
+              echo "✅ Web App '${{ env.AZURE_WEBAPP_NAME }}' exists"
+            else
+              echo "❌ Web App '${{ env.AZURE_WEBAPP_NAME }}' not found"
+              echo "Create it with: az webapp create --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} --plan <APP_SERVICE_PLAN> --name ${{ env.AZURE_WEBAPP_NAME }} --runtime 'NODE:20-lts'"
+              exit 1
+            fi
+            
+            # Check Function App
+            if az functionapp show --name ${{ env.AZURE_FUNCTIONS_NAME }} --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} 2>/dev/null; then
+              echo "✅ Function App '${{ env.AZURE_FUNCTIONS_NAME }}' exists"
+            else
+              echo "❌ Function App '${{ env.AZURE_FUNCTIONS_NAME }}' not found"
+              echo "Create it with: az functionapp create --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} --consumption-plan-location <LOCATION> --name ${{ env.AZURE_FUNCTIONS_NAME }} --runtime python --runtime-version 3.12 --storage-account <STORAGE_ACCOUNT>"
+              exit 1
+            fi
 
       - name: Deploy frontend to Azure Web App
         uses: azure/webapps-deploy@v3
