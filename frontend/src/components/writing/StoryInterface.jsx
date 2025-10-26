@@ -19,6 +19,11 @@ const StoryInterface = () => {
   const { storyId } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+  // Ensure user is available before operations
+  if (!user) {
+    navigate('/login');
+    return null;
+  }
   const editorRef = useRef(null);
   
   // State variables
@@ -296,5 +301,7 @@ const StoryInterface = () => {
     </div>
   );
 };
+
+StoryInterface.displayName = 'StoryInterface';
 
 export default StoryInterface;

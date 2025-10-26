@@ -11,18 +11,18 @@ def test_openai():
         
         from azure.identity import DefaultAzureCredential
 
-        endpoint = os.getenv("AZURE_OPENAI_ENDPOINT")
-        deployment = os.getenv("AZURE_OPENAI_DEPLOYMENT", "gpt-4o-mini")
-        api_version = os.getenv("AZURE_OPENAI_API_VERSION", "2024-08-01-preview")
+        endpoint = os.getenv("OPENAI_ENDPOINT")
+        deployment = os.getenv("OPENAI_DEPLOYMENT", "gpt-4o-mini")
+        api_version = os.getenv("OPENAI_API_VERSION", "2024-08-01-preview")
         
         print(f"Endpoint: {endpoint}")
         print(f"Deployment: {deployment}")
         print(f"API Version: {api_version}")
-        print("Authentication: Using Azure Managed Identity")
+        print("Authentication: Using Azure Managed Identity with RBAC")
         
         if not endpoint:
             print("\n❌ Missing endpoint!")
-            pytest.fail("Missing required AZURE_OPENAI_ENDPOINT environment variable")
+            pytest.fail("Missing required OPENAI_ENDPOINT environment variable")
             
         # Get Azure credential token
         print("\n🔄 Getting Azure credentials...")
